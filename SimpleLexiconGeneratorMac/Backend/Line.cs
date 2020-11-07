@@ -23,7 +23,7 @@ namespace SimpleLexiconGeneratorMac
     class DataLine : Line
     {
         public string WavPath { get; set; }
-        public string Accent { get; set; }
+        public string Transliteration { get; set; }
         public string HighGerman { get; set; }
         public string Context { get; set; }
         public string Lexicon { get; set; } = "";
@@ -35,7 +35,7 @@ namespace SimpleLexiconGeneratorMac
         protected override IEnumerable<string> GetLine()
         {
             yield return WavPath;
-            yield return Accent;
+            yield return Transliteration;
             yield return HighGerman;
             yield return Context;
             yield return Lexicon;
@@ -44,7 +44,7 @@ namespace SimpleLexiconGeneratorMac
         protected override void SetLine(string[] split)
         {
             WavPath = split[0];
-            Accent = split[1];
+            Transliteration = split[1];
             HighGerman = split[2];
             Context = split[3];
             if (split.Length > 4)

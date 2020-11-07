@@ -14,7 +14,7 @@ namespace SimpleLexiconGeneratorMac
         DataLine[] DataArray = new DataLine[0];
         private HashSet<string> ValidTokenSet = new HashSet<string>();
         //private SoundPlayer Player = new SoundPlayer();
-        public int CurrentIndex { get; private set; } = 0;
+        public int CurrentIndex { get; private set; } = -1;
         public int CurrentExternalIndex => CurrentIndex + 1;
         public DataLine CurrentLine => CurrentIndex < DataArray.Length && CurrentIndex >= 0 ? DataArray[CurrentIndex] : null;
         public string Column1String { get; private set; }
@@ -30,7 +30,7 @@ namespace SimpleLexiconGeneratorMac
         public void Init()
         {
             DataArray = SafeRead(InputTextFilePath).Select(x => new DataLine(x)).ToArray();
-            CurrentIndex = 0;
+            CurrentIndex = -1;
             SetLabels();
         }
 
@@ -98,11 +98,13 @@ namespace SimpleLexiconGeneratorMac
 
         public void SaveCurrentData(string accent, string highGerman, string context, string lexicon)
         {
-            Sanity.Requires(DataArray.Length > 0, "The data file is empty!");
+            if (CurrentIndex < 0 || CurrentIndex >= DataArray.Length)
+                return;
+            Sanity.Requires(DataArray.Length > 0, "The data file is empty!");            
             var line = new DataLine
             {
                 WavPath = CleanupData(CurrentLine.WavPath),
-                Accent = CleanupData(accent),
+                Transliteration = CleanupData(accent),
                 HighGerman = CleanupData(highGerman),
                 Context = CleanupData(context),
                 Lexicon = ValidLexicon(lexicon)
@@ -115,10 +117,10 @@ namespace SimpleLexiconGeneratorMac
         {
             return SpaceReg.Replace(inputString, " ").Trim();
         }
-        public void SaveAllData(string saveFilePath)
+        public void SaveAllData()
         {
             var list = DataArray.Select(x => x.Output());
-            File.WriteAllLines(saveFilePath, list);
+            File.WriteAllLines(InputTextFilePath, list);
         }
 
         public string ValidLexicon(string i)

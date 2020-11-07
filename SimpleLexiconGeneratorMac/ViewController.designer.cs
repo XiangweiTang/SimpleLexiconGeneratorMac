@@ -27,11 +27,29 @@ namespace SimpleLexiconGeneratorMac
 		[Outlet]
 		AppKit.NSTextField Label4Show { get; set; }
 
+		[Outlet]
+		AppKit.NSTextFieldCell LabelContextShow { get; set; }
+
+		[Outlet]
+		AppKit.NSTextField TextHighGermanShow { get; set; }
+
+		[Outlet]
+		AppKit.NSTextField TextLexiconShow { get; set; }
+
+		[Outlet]
+		AppKit.NSTextField TextTransliterationShow { get; set; }
+
 		[Action ("BtnLoadClick:")]
 		partial void BtnLoadClick (AppKit.NSButton sender);
 
+		[Action ("BtnNextClick:")]
+		partial void BtnNextClick (Foundation.NSObject sender);
+
 		[Action ("BtnPlayClick:")]
 		partial void BtnPlayClick (AppKit.NSButton sender);
+
+		[Action ("BtnPreviousClick:")]
+		partial void BtnPreviousClick (AppKit.NSButton sender);
 
 		[Action ("BtnSaveClick:")]
 		partial void BtnSaveClick (AppKit.NSButton sender);
@@ -61,6 +79,26 @@ namespace SimpleLexiconGeneratorMac
 			if (Label4Show != null) {
 				Label4Show.Dispose ();
 				Label4Show = null;
+			}
+
+			if (LabelContextShow != null) {
+				LabelContextShow.Dispose ();
+				LabelContextShow = null;
+			}
+
+			if (TextHighGermanShow != null) {
+				TextHighGermanShow.Dispose ();
+				TextHighGermanShow = null;
+			}
+
+			if (TextTransliterationShow != null) {
+				TextTransliterationShow.Dispose ();
+				TextTransliterationShow = null;
+			}
+
+			if (TextLexiconShow != null) {
+				TextLexiconShow.Dispose ();
+				TextLexiconShow = null;
 			}
 		}
 	}
