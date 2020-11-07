@@ -3,6 +3,9 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
+using Foundation;
+using AppKit;
+using System;
 
 namespace SimpleLexiconGeneratorMac
 {
@@ -39,7 +42,7 @@ namespace SimpleLexiconGeneratorMac
         }
         private void SetLabels()
         {
-            string path = "SimpleLexiconGeneratorCore.Internal.Phonetics.txt";
+            string path = "SimpleLexiconGeneratorMac.Internal.Phonetics.txt";
             var list = IO.ReadEmbed(path).Select(x => new PhoneticLine(x)).ToArray();
             ValidTokenSet = list.Select(x => x.XSampaSymbol).ToHashSet();
             var groups = list.ToLookup(x => x.ColumnId);
@@ -85,12 +88,12 @@ namespace SimpleLexiconGeneratorMac
         {
             string wavPath = Path.Combine(InputAudioFolderPath, CurrentLine.WavPath);
             Sanity.Requires(File.Exists(wavPath), $"Missing file {wavPath}");
-            
+            AudioPlayer.Play(wavPath);
         }
 
         public void Stop()
         {
-            
+            AudioPlayer.Stop();
         }
 
         public void SaveCurrentData(string accent, string highGerman, string context, string lexicon)
@@ -185,4 +188,5 @@ namespace SimpleLexiconGeneratorMac
             return message;
         }
     }
+
 }

@@ -84,6 +84,8 @@
     <Compile Include="Backend\Line.cs" />
     <Compile Include="Backend\Sanity.cs" />
     <Compile Include="Backend\Storage.cs" />
+    <Compile Include="Backend\AudioPlayer.cs" />
+    <Compile Include="Backend\AudioDataSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Main.storyboard" />
