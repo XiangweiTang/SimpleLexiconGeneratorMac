@@ -3,6 +3,8 @@ using System.IO;
 using AppKit;
 using Foundation;
 using System.Collections.Generic;
+using System.Net;
+using System.Globalization;
 
 namespace SimpleLexiconGeneratorMac
 {
@@ -11,9 +13,16 @@ namespace SimpleLexiconGeneratorMac
         private Backend BE = new Backend();
         private bool Initialized = false;
         private bool PlayingFlag = false;
+        private bool OverallBlock = false;
         public ViewController(IntPtr handle) : base(handle)
         {
-            InitBackend();            
+            InitBackend();
+            if (DateExpired())
+            {
+                ShowMessageBox("Warning", "Your app may expire or not connecting to internet.");
+                OverallBlock = true;
+                Initialized = false;
+            }
         }
 
         public override void ViewDidLoad()
@@ -52,7 +61,7 @@ namespace SimpleLexiconGeneratorMac
             {
                 string currentPath = Directory.GetCurrentDirectory().Replace("SLG.app/Contents/Resources", "");
                 BE.InputAudioFolderPath = Path.Combine(currentPath, "Audio/");
-                BE.InputTextFilePath = Path.Combine(currentPath, "Transcript.txt");
+                BE.InputTextFilePath = Path.Combine(currentPath, "Data.txt");
                 BE.Init();
                 ViewDidLoad();
                 Sanity.Requires(File.Exists(BE.InputTextFilePath), "Missing text file.");
@@ -62,7 +71,8 @@ namespace SimpleLexiconGeneratorMac
             {
                 return;
             }
-            Initialized = true;
+            if (!OverallBlock)
+                Initialized = true;
         }
 
         public override void AwakeFromNib()
@@ -80,7 +90,7 @@ namespace SimpleLexiconGeneratorMac
             GeneralAction(() =>
             {
                 BE.Stop();
-                SaveCurrent();
+                SaveCurrentData();
                 LoadCurrent();
             });
         }
@@ -103,11 +113,20 @@ namespace SimpleLexiconGeneratorMac
         {
             GeneralAction(() =>
             {
+                if (DateExpired())
+                {
+                    ShowMessageBox("Warning", "Your app may expire or not connecting to internet.");
+                    OverallBlock = true;
+                    Initialized = false;
+                    return;
+                }
+                SaveCurrentData();
                 BE.SaveAllData();
+                ShowMessageBox("Info", "Saving is done!");
             });
         }
 
-        private void SaveCurrent()
+        private void SaveCurrentData()
         {
             BE.SaveCurrentData(TextTransliterationShow.StringValue,
                 TextHighGermanShow.StringValue,
@@ -136,6 +155,27 @@ namespace SimpleLexiconGeneratorMac
             catch(Exception e)
             {
                 ShowMessageBox("Error", e.Message);
+            }
+        }
+
+        const string MS_URL = "http://www.microsoft.com";
+        static readonly DateTime ExpiredDate = new DateTime(2021, 1, 1);
+
+        private bool DateExpired()
+        {
+            try
+            {
+                HttpWebRequest req = WebRequest.CreateHttp(MS_URL);
+                using(HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
+                {
+                    string timeString = resp.Headers["date"];
+                    DateTime dt = DateTime.ParseExact(timeString, "ddd, dd MMM yyyy HH:mm:ss 'GMT'", CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.AssumeUniversal);
+                    return dt >= ExpiredDate;
+                }
+            }
+            catch
+            {
+                return true;
             }
         }
 
