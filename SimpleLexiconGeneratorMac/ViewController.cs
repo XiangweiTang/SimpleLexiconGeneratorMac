@@ -12,7 +12,6 @@ namespace SimpleLexiconGeneratorMac
     {
         private Backend BE = new Backend();
         private bool Initialized = false;
-        private bool PlayingFlag = false;
         private bool OverallBlock = false;
         public ViewController(IntPtr handle) : base(handle)
         {
@@ -56,7 +55,6 @@ namespace SimpleLexiconGeneratorMac
         {
             BE.Stop();
             Initialized = false;
-            PlayingFlag = false;
             try
             {
                 string currentPath = Directory.GetCurrentDirectory().Replace("SLG.app/Contents/Resources", "");
@@ -101,11 +99,7 @@ namespace SimpleLexiconGeneratorMac
                 return;
             GeneralAction(() =>
             {
-                if (PlayingFlag)
-                    BE.Stop();
-                else
-                    BE.Play();
-                PlayingFlag = !PlayingFlag;
+                BE.Play();
             });
         }
 
